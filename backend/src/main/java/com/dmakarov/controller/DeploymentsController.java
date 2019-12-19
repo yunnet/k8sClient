@@ -1,13 +1,13 @@
 package com.dmakarov.controller;
 
-import static com.dmakarov.ApiPathsV1.DEPLOYMENTS;
+import static com.dmakarov.ApiPathsV1.DEPLOYMENT;
+import static com.dmakarov.ApiPathsV1.NAMESPACE;
 import static com.dmakarov.ApiPathsV1.ROOT;
 
-import com.dmakarov.model.Deployment;
-import com.dmakarov.model.DeploymentDto;
+import com.dmakarov.model.dto.DeploymentDto;
 import com.dmakarov.service.DeploymentService;
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -26,29 +26,33 @@ public class DeploymentsController {
 
   private final DeploymentService service;
 
-  @PostMapping(DEPLOYMENTS)
-  ResponseEntity<Deployment> createDeployment(@RequestBody DeploymentDto deploymentDto) {
+  @PostMapping(NAMESPACE + "/{namespace}")
+  ResponseEntity<DeploymentDto> createDeployment(@PathVariable String namespace,
+      @RequestBody DeploymentDto deploymentDto) {
     log.info("Create deployment request received, deployment {}", deploymentDto);
 
-    Deployment deployment = service.createDeployment(deploymentDto);
+    DeploymentDto deployment = service.createDeployment(namespace, deploymentDto);
 
     return ResponseEntity.ok().body(deployment);
   }
 
-  @GetMapping(DEPLOYMENTS + "/{deploymentId}")
-  ResponseEntity<Deployment> getDeployment(@PathVariable UUID deploymentId) {
-    log.info("Get deployment request received, deploymentId {}", deploymentId);
+  @GetMapping(NAMESPACE + "/{namespace}" + DEPLOYMENT + "/{deploymentName}")
+  ResponseEntity<DeploymentDto> getDeployment(@PathVariable String namespace,
+      @PathVariable String deploymentName) {
+    log.info("Get deployment request received, deployment {}", deploymentName);
 
-    Deployment deployment = service.getDeployment(deploymentId);
+    Optional<DeploymentDto> deployment = service.getDeployment(namespace, deploymentName);
 
-    return ResponseEntity.ok().body(deployment);
+    return deployment.isPresent()
+        ? ResponseEntity.ok().body(deployment.get())
+        : ResponseEntity.notFound().build();
   }
 
-  @GetMapping(DEPLOYMENTS)
-  ResponseEntity<List<Deployment>> getDeployments() {
+  @GetMapping(NAMESPACE + "/{namespace}")
+  ResponseEntity<List<DeploymentDto>> getDeployments(@PathVariable String namespace) {
     log.info("Get deployments request received");
 
-    List<Deployment> deployment = service.getDeployments();
+    List<DeploymentDto> deployment = service.getDeployments(namespace);
 
     return ResponseEntity.ok().body(deployment);
   }

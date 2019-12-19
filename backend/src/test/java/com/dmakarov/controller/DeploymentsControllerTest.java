@@ -1,8 +1,10 @@
 package com.dmakarov.controller;
 
-import static com.dmakarov.ApiPathsV1.DEPLOYMENTS;
+import static com.dmakarov.ApiPathsV1.DEPLOYMENT;
+import static com.dmakarov.ApiPathsV1.NAMESPACE;
 import static com.dmakarov.ApiPathsV1.ROOT;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -10,14 +12,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.dmakarov.model.Deployment;
-import com.dmakarov.model.DeploymentDto;
+import com.dmakarov.model.dto.DeploymentDto;
 import com.dmakarov.service.DeploymentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.util.Arrays;
-import java.util.UUID;
+import java.util.Optional;
 import net.bytebuddy.utility.RandomString;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,93 +43,95 @@ class DeploymentsControllerTest {
 
   @Test
   void createDeployment() throws Exception {
-    UUID deploymentId = UUID.randomUUID();
+    String namespace = RandomString.make(10);
     String name = RandomString.make(10);
     String image = RandomString.make(10);
     DeploymentDto deploymentDto = DeploymentDto.builder()
-        .deploymentId(deploymentId)
-        .name(name)
-        .image(image)
-        .build();
-    Deployment deployment = Deployment.builder()
-        .deploymentId(deploymentId)
+        .namespace(namespace)
         .name(name)
         .image(image)
         .build();
 
-    when(service.createDeployment(any(DeploymentDto.class)))
-        .thenReturn(deployment);
+    when(service.createDeployment(anyString(), any(DeploymentDto.class)))
+        .thenReturn(deploymentDto);
 
     this.mockMvc
         .perform(
-            post(ROOT + DEPLOYMENTS)
+            post(ROOT + NAMESPACE + "/{namespace}", namespace)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(deploymentDto))
         )
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.deploymentId")
-            .value(deploymentDto.getDeploymentId().toString()))
         .andExpect(jsonPath("$.name").value(deploymentDto.getName()))
         .andExpect(jsonPath("$.image").value(deploymentDto.getImage()));
   }
 
   @Test
   void getDeployment() throws Exception {
-    UUID deploymentId = UUID.randomUUID();
+    String namespace = RandomString.make(10);
     String name = RandomString.make(10);
     String image = RandomString.make(10);
-    Deployment deployment = Deployment.builder()
-        .deploymentId(deploymentId)
+    DeploymentDto deploymentDto = DeploymentDto.builder()
+        .namespace(namespace)
         .name(name)
         .image(image)
         .build();
 
-    when(service.getDeployment(any(UUID.class))).thenReturn(deployment);
+    when(service.getDeployment(anyString(), anyString())).thenReturn(Optional.of(deploymentDto));
 
     this.mockMvc
         .perform(
-            get(ROOT + DEPLOYMENTS + "/{deploymentId}", deploymentId)
+            get(ROOT + NAMESPACE + "/{namespace}" + DEPLOYMENT + "/{deploymentName}",
+                namespace, name)
                 .contentType(MediaType.APPLICATION_JSON)
         )
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.deploymentId")
-            .value(deployment.getDeploymentId().toString()))
-        .andExpect(jsonPath("$.name").value(deployment.getName()))
-        .andExpect(jsonPath("$.image").value(deployment.getImage()));
+        .andExpect(jsonPath("$.name").value(deploymentDto.getName()))
+        .andExpect(jsonPath("$.image").value(deploymentDto.getImage()));
+  }
+
+  @Test
+  void getDeployment_notFound() throws Exception {
+    when(service.getDeployment(anyString(), anyString())).thenReturn(Optional.empty());
+
+    this.mockMvc
+        .perform(
+            get(ROOT + NAMESPACE + "/{namespace}" + DEPLOYMENT + "/{deploymentName}",
+                RandomString.make(10), RandomString.make(10))
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+        .andDo(print())
+        .andExpect(status().isNotFound());
   }
 
   @Test
   void getDeployments() throws Exception {
-    UUID deploymentId = UUID.randomUUID();
+    String namespace = RandomString.make(10);
     String name = RandomString.make(10);
     String image = RandomString.make(10);
-    Deployment firstDeployment = Deployment.builder()
-        .deploymentId(deploymentId)
+    DeploymentDto firstDeployment = DeploymentDto.builder()
+        .namespace(namespace)
         .name(name)
         .image(image)
         .build();
-    Deployment secondDeployment = Deployment.builder()
-        .deploymentId(deploymentId)
+    DeploymentDto secondDeployment = DeploymentDto.builder()
+        .namespace(namespace)
         .name(name)
         .image(image)
         .build();
-    when(service.getDeployments())
+    when(service.getDeployments(anyString()))
         .thenReturn(Arrays.asList(firstDeployment, secondDeployment));
 
     this.mockMvc
         .perform(
-            get(ROOT + DEPLOYMENTS)
+            get(ROOT + NAMESPACE + "/{namespace}", namespace)
                 .contentType(MediaType.APPLICATION_JSON)
         )
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$[0].deploymentId")
-            .value(firstDeployment.getDeploymentId().toString()))
         .andExpect(jsonPath("$[0].name").value(firstDeployment.getName()))
-        .andExpect(jsonPath("$[1].deploymentId")
-            .value(secondDeployment.getDeploymentId().toString()))
         .andExpect(jsonPath("$[1].name").value(secondDeployment.getName()));
   }
 

@@ -6,7 +6,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class DeploymentDto {
+public class DeploymentEntity {
   UUID deploymentId;
   String name;
   String image;

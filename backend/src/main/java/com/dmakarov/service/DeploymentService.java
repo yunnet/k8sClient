@@ -1,17 +1,16 @@
 package com.dmakarov.service;
 
-import com.dmakarov.model.Deployment;
-import com.dmakarov.model.DeploymentDto;
+import com.dmakarov.model.dto.DeploymentDto;
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 
 /**
  * Service handles all operations on Kubernetes Deployments.
  */
 public interface DeploymentService {
-  Deployment createDeployment(DeploymentDto deploymentDto);
+  DeploymentDto createDeployment(String namespace, DeploymentDto deploymentDto);
 
-  Deployment getDeployment(UUID deploymentId);
+  Optional<DeploymentDto> getDeployment(String namespace, String deploymentName);
 
-  List<Deployment> getDeployments();
+  List<DeploymentDto> getDeployments(String namespace);
 }
