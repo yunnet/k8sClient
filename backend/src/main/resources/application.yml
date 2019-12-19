@@ -1,0 +1,28 @@
+spring:
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+      WRITE_ENUMS_USING_TO_STRING: true
+      indent_output: true
+    deserialization:
+      READ_ENUMS_USING_TO_STRING: true
+
+server:
+  port: 8080 # Indicate the PORT where this service will be started
+
+management:
+  endpoints:
+    web:
+      base-path: "/api/k8sclient/v1/"
+      exposure:
+        include: "health, info, metrics"
+      path-mapping:
+        health: "healthCheck"
+        info: "info"
+        metrics: "metrics"
+    jmx:
+      exposure:
+        exclude: "*"
+  endpoint:
+    health:
+      show-details: "always"

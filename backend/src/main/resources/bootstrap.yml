@@ -1,0 +1,3 @@
+spring:
+  application:
+    name: k8s-client   #current service name
