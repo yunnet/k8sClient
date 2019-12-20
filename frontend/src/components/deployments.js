@@ -6,7 +6,7 @@ const Deployments = ({deployments: deployments}) => {
             <table className="table table-bordered">
                 <thead className="thead-dark">
                 <tr>
-                    <th scope="col">DeploymentId</th>
+                    <th scope="col">Namespace</th>
                     <th scope="col">Name</th>
                     <th scope="col">Image</th>
                 </tr>
@@ -15,7 +15,7 @@ const Deployments = ({deployments: deployments}) => {
                 {deployments.map((deployment) => (
                     <tbody>
                     <tr>
-                        <td class="text-center">{deployment.deploymentId}</td>
+                        <td class="text-center">{deployment.namespace}</td>
                         <td class="text-center">{deployment.name}</td>
                         <td class="text-center">{deployment.image}</td>
                     </tr>
