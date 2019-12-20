@@ -9,15 +9,17 @@ const Deployments = ({deployments: deployments}) => {
                     <th scope="col">Namespace</th>
                     <th scope="col">Name</th>
                     <th scope="col">Image</th>
+                    <th scope="col">Status</th>
                 </tr>
                 </thead>
 
                 {deployments.map((deployment) => (
                     <tbody>
                     <tr>
-                        <td class="text-center">{deployment.namespace}</td>
-                        <td class="text-center">{deployment.name}</td>
-                        <td class="text-center">{deployment.image}</td>
+                        <td className="text-center">{deployment.namespace}</td>
+                        <td className="text-center">{deployment.name}</td>
+                        <td className="text-center">{deployment.image}</td>
+                        <td className="text-center">{deployment.status}</td>
                     </tr>
                     </tbody>
                 ))}

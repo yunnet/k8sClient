@@ -11,23 +11,49 @@ import lombok.Value;
 @Value
 @Builder
 public class DeploymentDto {
+  /**
+   * Deployment Namespace.
+   */
   String namespace;
 
+  /**
+   * Deployment name. Unique field.
+   */
   @NotEmpty(message = "Please provide a deployment name")
   String name;
 
+  /**
+   * Deployment replicas count.
+   */
   @NotNull(message = "Please provide a deployment replicas count")
   @Min(1)
   @Max(10)
   int replicasCount;
 
+  /**
+   * Deployment container image name.
+   */
   @NotEmpty(message = "Please provide a deployment container image")
   String image;
 
+  /**
+   * Deployment container commands.
+   */
   List<String> commands;
 
+  /**
+   * Deployment container args.
+   */
   List<String> args;
 
+  /**
+   * Deployment container port.
+   */
   @NotNull
   int port;
+
+  /**
+   * Deployment status. Shows "Available"/"Requested" replicas. Example: 2/2
+   */
+  String status;
 }
