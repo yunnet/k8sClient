@@ -1,4 +1,17 @@
+server:
+  port: 8080 # Indicate the PORT where this service will be started
+
 spring:
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false
@@ -6,9 +19,6 @@ spring:
       indent_output: true
     deserialization:
       READ_ENUMS_USING_TO_STRING: true
-
-server:
-  port: 8080 # Indicate the PORT where this service will be started
 
 management:
   endpoints:

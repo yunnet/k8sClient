@@ -25,9 +25,10 @@
     <checkstyle.config.location>checkstyle.xml</checkstyle.config.location>
     <checkstyle.version>8.18</checkstyle.version>
 
-    <spring.boot.version>2.1.2.RELEASE</spring.boot.version>
+    <spring.boot.version>2.2.2.RELEASE</spring.boot.version>
     <lombok.version>1.18.4</lombok.version>
     <kubernetes-java-client.version>4.4.1</kubernetes-java-client.version>
+    <h2.version>1.4.200</h2.version>
 
     <junit.jupiter.version>5.5.1</junit.jupiter.version>
     <mockito.version>2.23.0</mockito.version>
@@ -68,6 +69,12 @@
       </dependency>
 
       <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-jpa</artifactId>
+        <version>${spring.boot.version}</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.projectlombok</groupId>
         <artifactId>lombok</artifactId>
         <version>${lombok.version}</version>
@@ -77,6 +84,12 @@
         <groupId>io.fabric8</groupId>
         <artifactId>kubernetes-client</artifactId>
         <version>${kubernetes-java-client.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <version>${h2.version}</version>
       </dependency>
 
       <!-- JUnit 5 API -->

@@ -1,5 +1,7 @@
 package com.dmakarov.service.impl;
 
+import com.dmakarov.dao.DeploymentRepository;
+import com.dmakarov.model.DeploymentEntity;
 import com.dmakarov.model.dto.DeploymentDto;
 import com.dmakarov.model.exception.ClientException;
 import com.dmakarov.service.DeploymentService;
@@ -21,14 +23,39 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 public class DeploymentServiceImpl implements DeploymentService {
+  private final DeploymentRepository repository;
   private final Config config;
 
   @Override
   public DeploymentDto createDeployment(String namespace, DeploymentDto deploymentDto) {
-    return DeploymentDto.builder()
-        .namespace(deploymentDto.getNamespace())
+    DeploymentEntity existedDeployment = repository
+        .findByNamespaceAndName(namespace, deploymentDto.getName());
+
+    if (existedDeployment != null) {
+      throw new ClientException(HttpStatus.BAD_REQUEST, "Deployment in provided namespace with "
+          + "this name already exist");
+    }
+
+    DeploymentEntity newDeploymentEntity = DeploymentEntity.builder()
+        .namespace(namespace)
         .name(deploymentDto.getName())
         .image(deploymentDto.getImage())
+        .replicasCount(deploymentDto.getReplicasCount())
+        .commands(deploymentDto.getCommands())
+        .args(deploymentDto.getArgs())
+        .port(deploymentDto.getPort())
+        .build();
+
+    DeploymentEntity deploymentEntity = repository.save(newDeploymentEntity);
+
+    return DeploymentDto.builder()
+        .namespace(deploymentEntity.getNamespace())
+        .name(deploymentEntity.getName())
+        .image(deploymentEntity.getImage())
+        .replicasCount(deploymentEntity.getReplicasCount())
+        .commands(deploymentEntity.getCommands())
+        .args(deploymentEntity.getArgs())
+        .port(deploymentEntity.getPort())
         .build();
   }
 

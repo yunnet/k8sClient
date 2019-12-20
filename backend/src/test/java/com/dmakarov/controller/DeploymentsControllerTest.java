@@ -50,6 +50,7 @@ class DeploymentsControllerTest {
         .namespace(namespace)
         .name(name)
         .image(image)
+        .replicasCount(1)
         .build();
 
     when(service.createDeployment(anyString(), any(DeploymentDto.class)))
@@ -57,7 +58,7 @@ class DeploymentsControllerTest {
 
     this.mockMvc
         .perform(
-            post(ROOT + NAMESPACE + "/{namespace}", namespace)
+            post(ROOT + NAMESPACE + "/{namespace}" + DEPLOYMENT, namespace)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(deploymentDto))
         )
@@ -65,6 +66,26 @@ class DeploymentsControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.name").value(deploymentDto.getName()))
         .andExpect(jsonPath("$.image").value(deploymentDto.getImage()));
+  }
+
+  @Test
+  void createDeployment_validationException() throws Exception {
+    String namespace = RandomString.make(10);
+    DeploymentDto deploymentDto = DeploymentDto.builder()
+        .namespace(namespace)
+        .build();
+
+    when(service.createDeployment(anyString(), any(DeploymentDto.class)))
+        .thenReturn(deploymentDto);
+
+    this.mockMvc
+        .perform(
+            post(ROOT + NAMESPACE + "/{namespace}" + DEPLOYMENT, namespace)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(deploymentDto))
+        )
+        .andDo(print())
+        .andExpect(status().isBadRequest());
   }
 
   @Test

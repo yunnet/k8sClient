@@ -8,6 +8,7 @@ import com.dmakarov.model.dto.DeploymentDto;
 import com.dmakarov.service.DeploymentService;
 import java.util.List;
 import java.util.Optional;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -26,9 +27,9 @@ public class DeploymentsController {
 
   private final DeploymentService service;
 
-  @PostMapping(NAMESPACE + "/{namespace}")
+  @PostMapping(NAMESPACE + "/{namespace}" + DEPLOYMENT)
   ResponseEntity<DeploymentDto> createDeployment(@PathVariable String namespace,
-      @RequestBody DeploymentDto deploymentDto) {
+      @Valid @RequestBody DeploymentDto deploymentDto) {
     log.info("Create deployment request received, deployment {}", deploymentDto);
 
     DeploymentDto deployment = service.createDeployment(namespace, deploymentDto);

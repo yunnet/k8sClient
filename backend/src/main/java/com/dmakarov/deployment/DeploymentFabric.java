@@ -1,6 +1,6 @@
 package com.dmakarov.deployment;
 
-import com.dmakarov.model.DeploymentData;
+import com.dmakarov.model.dto.DeploymentDto;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class DeploymentFabric {
-  public static Function<DeploymentData, Deployment> deployment = (deploymentData)
+  public static Function<DeploymentDto, Deployment> deployment = (deploymentData)
       -> new DeploymentBuilder()
       .withApiVersion("apps/v1beta2")
       .withNewMetadata()
