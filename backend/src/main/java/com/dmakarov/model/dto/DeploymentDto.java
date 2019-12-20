@@ -50,6 +50,7 @@ public class DeploymentDto {
    * Deployment container port.
    */
   @NotNull
+  @Min(1)
   int port;
 
   /**

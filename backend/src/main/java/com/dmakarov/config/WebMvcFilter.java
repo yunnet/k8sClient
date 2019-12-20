@@ -1,5 +1,8 @@
 package com.dmakarov.config;
 
+import static com.dmakarov.ApiPathsV1.H2_CONSOLE;
+import static com.dmakarov.ApiPathsV1.ROOT;
+
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -9,7 +12,6 @@ import org.springframework.web.servlet.resource.PathResourceResolver;
 
 @Component
 public class WebMvcFilter implements WebMvcConfigurer {
-  private static final String BASE_API_PATH = "/api/billing";
 
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -28,8 +30,8 @@ public class WebMvcFilter implements WebMvcConfigurer {
         .addResolver(new PathResourceResolver() {
           @Override
           protected Resource getResource(String resourcePath, Resource location) {
-            if (resourcePath.startsWith(BASE_API_PATH)
-                || resourcePath.startsWith(BASE_API_PATH.substring(1))) {
+            if (resourcePath.startsWith(ROOT) || resourcePath.startsWith(ROOT.substring(1))
+                || resourcePath.startsWith(H2_CONSOLE)) {
               return null;
             }
 

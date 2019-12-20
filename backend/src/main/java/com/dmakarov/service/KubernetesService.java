@@ -1,5 +1,6 @@
 package com.dmakarov.service;
 
+import com.dmakarov.model.DeploymentEntity;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentList;
 
@@ -8,7 +9,13 @@ import io.fabric8.kubernetes.api.model.apps.DeploymentList;
  */
 public interface KubernetesService {
 
-  Deployment retrieveDeployment(String namespace, String deploymentName);
+  void deploy(DeploymentEntity deploymentEntity);
 
-  DeploymentList retrieveDeployments(String namespace);
+  void updateDeployment(DeploymentEntity deploymentEntity);
+
+  boolean deleteDeployment(DeploymentEntity deploymentEntity);
+
+  Deployment getDeployment(String namespace, String deploymentName);
+
+  DeploymentList getDeployments(String namespace);
 }

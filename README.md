@@ -23,3 +23,10 @@ You can import POSTMAN collection of API requests from ```K8sClient.postman_coll
 
 Frontend is available under 
 [frontend](http://localhost:8080)
+
+# H2 Database
+H2 Database console is available under 
+[console](http://localhost:8080/h2-console)
+JDBC URL: jdbc:h2:mem:testdb
+User Name: sa
+Password: <empty>

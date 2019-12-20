@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 public class DeploymentServiceImpl implements DeploymentService {
+  public static final String STATUS_SEPARATOR = "/";
   private final DeploymentRepository repository;
   private final KubernetesService kubernetesService;
 
@@ -42,10 +43,104 @@ public class DeploymentServiceImpl implements DeploymentService {
         .port(deploymentDto.getPort())
         .build();
 
+    // Deploy to K8s, if no errors or exceptions save entity
+    kubernetesService.deploy(newDeploymentEntity);
+
     DeploymentEntity deploymentEntity = repository.save(newDeploymentEntity);
 
+    return getDeploymentDto(deploymentEntity);
+  }
 
+  @Override
+  public DeploymentDto updateDeployment(String namespace, String deploymentName,
+      DeploymentDto deploymentDto) {
+    DeploymentEntity existedDeployment = repository
+        .findByNamespaceAndName(namespace, deploymentName);
 
+    if (existedDeployment == null) {
+      throw new ClientException(HttpStatus.BAD_REQUEST, "Deployment not found");
+    }
+
+    DeploymentEntity updatedDeploymentEntity = DeploymentEntity.builder()
+        .id(existedDeployment.getId())
+        .namespace(existedDeployment.getNamespace())
+        .name(deploymentDto.getName())
+        .image(deploymentDto.getImage())
+        .replicasCount(deploymentDto.getReplicasCount())
+        .commands(deploymentDto.getCommands())
+        .args(deploymentDto.getArgs())
+        .port(deploymentDto.getPort())
+        .build();
+
+    // Deploy to K8s, if no errors or exceptions save entity
+    kubernetesService.updateDeployment(updatedDeploymentEntity);
+
+    DeploymentEntity deploymentEntity = repository.save(updatedDeploymentEntity);
+
+    return getDeploymentDto(deploymentEntity);
+  }
+
+  @Override
+  public void deleteDeployment(String namespace, String deploymentName) {
+    DeploymentEntity existedDeployment = repository
+        .findByNamespaceAndName(namespace, deploymentName);
+
+    if (existedDeployment == null) {
+      throw new ClientException(HttpStatus.BAD_REQUEST, "Deployment not found");
+    }
+
+    // Delete DEPLOYMENT_FUNCTION in K8s, if no errors or exceptions delete entity
+    kubernetesService.deleteDeployment(existedDeployment);
+
+    repository.delete(existedDeployment);
+  }
+
+  @Override
+  public Optional<DeploymentDto> getDeployment(String namespace, String deploymentName) {
+    Optional<DeploymentDto> deployment = Optional
+        .ofNullable(kubernetesService.getDeployment(namespace, deploymentName))
+        .map(dep -> DeploymentDto.builder()
+            .namespace(dep.getMetadata().getNamespace())
+            .name(dep.getMetadata().getName())
+            .image(dep.getSpec().getTemplate().getSpec().getContainers().get(0).getImage())
+            .status(getStatus(dep))
+            .replicasCount(dep.getSpec().getReplicas())
+            .port(
+                dep.getSpec().getTemplate().getSpec().getContainers().get(0).getPorts()
+                    .get(0).getContainerPort()
+            )
+            .build());
+
+    return deployment.or(Optional::empty);
+  }
+
+  @Override
+  public List<DeploymentDto> getDeployments(String namespace) {
+    return kubernetesService.getDeployments(namespace).getItems().stream()
+        .map(deployment ->
+            DeploymentDto.builder()
+                .namespace(deployment.getMetadata().getNamespace())
+                .name(deployment.getMetadata().getName())
+                .image(
+                    deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getImage()
+                )
+                .status(getStatus(deployment))
+                .replicasCount(deployment.getSpec().getReplicas())
+                .port(
+                    deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getPorts()
+                        .get(0).getContainerPort()
+                )
+                .build())
+        .collect(Collectors.toList());
+  }
+
+  private String getStatus(Deployment deployment) {
+    return deployment.getStatus().getReadyReplicas()
+        + STATUS_SEPARATOR
+        + deployment.getStatus().getReplicas();
+  }
+
+  private DeploymentDto getDeploymentDto(DeploymentEntity deploymentEntity) {
     return DeploymentDto.builder()
         .namespace(deploymentEntity.getNamespace())
         .name(deploymentEntity.getName())
@@ -55,36 +150,5 @@ public class DeploymentServiceImpl implements DeploymentService {
         .args(deploymentEntity.getArgs())
         .port(deploymentEntity.getPort())
         .build();
-  }
-
-  @Override
-  public Optional<DeploymentDto> getDeployment(String namespace, String deploymentName) {
-    Optional<DeploymentDto> deployment = Optional
-        .ofNullable(kubernetesService.retrieveDeployment(namespace, deploymentName))
-        .map(dep -> DeploymentDto.builder()
-            .namespace(dep.getMetadata().getNamespace())
-            .name(dep.getMetadata().getName())
-            .image(dep.getSpec().getTemplate().getSpec().getContainers().get(0).getImage())
-            .build());
-
-    return deployment.or(Optional::empty);
-  }
-
-  @Override
-  public List<DeploymentDto> getDeployments(String namespace) {
-    return kubernetesService.retrieveDeployments(namespace).getItems().stream()
-        .map(deployment ->
-            DeploymentDto.builder()
-                .namespace(deployment.getMetadata().getNamespace())
-                .name(deployment.getMetadata().getName())
-                .image(
-                    deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getImage())
-                .status(getStatus(deployment))
-                .build())
-        .collect(Collectors.toList());
-  }
-
-  private String getStatus(Deployment deployment) {
-    return deployment.getStatus().getReadyReplicas() + "/" + deployment.getStatus().getReplicas();
   }
 }

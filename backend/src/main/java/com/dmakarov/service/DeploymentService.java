@@ -10,6 +10,11 @@ import java.util.Optional;
 public interface DeploymentService {
   DeploymentDto createDeployment(String namespace, DeploymentDto deploymentDto);
 
+  DeploymentDto updateDeployment(String namespace, String deploymentName,
+      DeploymentDto deploymentDto);
+
+  void deleteDeployment(String namespace, String deploymentName);
+
   Optional<DeploymentDto> getDeployment(String namespace, String deploymentName);
 
   List<DeploymentDto> getDeployments(String namespace);
