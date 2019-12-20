@@ -49,7 +49,7 @@ public class DeploymentsController {
         : ResponseEntity.notFound().build();
   }
 
-  @GetMapping(NAMESPACE + "/{namespace}")
+  @GetMapping(NAMESPACE + "/{namespace}" + DEPLOYMENT)
   ResponseEntity<List<DeploymentDto>> getDeployments(@PathVariable String namespace) {
     log.info("Get deployments request received");
 

@@ -147,7 +147,7 @@ class DeploymentsControllerTest {
 
     this.mockMvc
         .perform(
-            get(ROOT + NAMESPACE + "/{namespace}", namespace)
+            get(ROOT + NAMESPACE + "/{namespace}" + DEPLOYMENT, namespace)
                 .contentType(MediaType.APPLICATION_JSON)
         )
         .andDo(print())

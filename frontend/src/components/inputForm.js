@@ -6,7 +6,7 @@ class InputForm extends React.Component {
 
     handleSubmit = async (event) => {
         event.preventDefault();
-        const resp = await Axios.get(`http://localhost:8080/api/k8sclient/v1/namespace/${this.state.namespace}`);
+        const resp = await Axios.get(`http://localhost:8080/api/k8sclient/v1/namespace/${this.state.namespace}/deployment`);
         this.props.onSubmit(resp.data);
         this.setState({ namespace: '' });
     };
