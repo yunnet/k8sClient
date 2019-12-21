@@ -1,0 +1,231 @@
+{
+	"info": {
+		"_postman_id": "982b6a73-0e30-4305-8e12-0f7c88f3efd1",
+		"name": "K8S client",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Deployment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4af8f7fb-5252-4013-bfa0-dbeade680b79",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"namespace\", jsonData.namespace);",
+							"postman.setEnvironmentVariable(\"name\", jsonData.name);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"hello-world\",\n\t\"image\": \"gcr.io/hello-minikube-zero-install/hello-node\",\n\t\"replicasCount\": \"1\",\n\t\"port\": \"8080\"\n}",
+					"options": {
+						"raw": {
+							"language": "javascript"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/k8sclient/v1/namespace/default/deployment",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"k8sclient",
+						"v1",
+						"namespace",
+						"default",
+						"deployment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Deployment by Name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "63a32d63-fe68-479e-8fd7-e91d4e181b1b",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/k8sclient/v1/namespace/{{namespace}}/deployment/{{name}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"k8sclient",
+						"v1",
+						"namespace",
+						"{{namespace}}",
+						"deployment",
+						"{{name}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Deployments",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1ac76f1b-12fe-4709-8806-243b40a1c152",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/k8sclient/v1/namespace/{{namespace}}/deployment",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"k8sclient",
+						"v1",
+						"namespace",
+						"{{namespace}}",
+						"deployment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Deployment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "21341854-f0a7-4f9f-bddb-726b73dfc3ba",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"hello-world\",\n\t\"image\": \"gcr.io/hello-minikube-zero-install/hello-node\",\n\t\"replicasCount\": \"2\",\n\t\"port\": \"8080\"\n}",
+					"options": {
+						"raw": {
+							"language": "javascript"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/k8sclient/v1/namespace/{{namespace}}/deployment/{{name}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"k8sclient",
+						"v1",
+						"namespace",
+						"{{namespace}}",
+						"deployment",
+						"{{name}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Deployment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "38b14418-c729-4b1e-bb53-1e1c9a36885b",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/api/k8sclient/v1/namespace/{{namespace}}/deployment/{{name}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"k8sclient",
+						"v1",
+						"namespace",
+						"{{namespace}}",
+						"deployment",
+						"{{name}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
