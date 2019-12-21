@@ -41,3 +41,7 @@ k8s:
   endpoint: ${KUBERNETES_MASTER:https://2FF932E7325FEB73C716CC66C54FD587.gr7.us-east-1.eks.amazonaws.com}
   defaultNamespace: default
   authToken: ${AWS_TOKEN}
+
+jwt:
+  secret: sad87s6dkjaehdfi7eyfa
+  ttl: 1h

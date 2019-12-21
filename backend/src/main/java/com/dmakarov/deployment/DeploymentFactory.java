@@ -63,5 +63,4 @@ public class DeploymentFactory {
       .endTemplate()
       .endSpec()
       .build();
-
 }

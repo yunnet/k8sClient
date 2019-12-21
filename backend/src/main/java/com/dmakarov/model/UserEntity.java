@@ -1,6 +1,6 @@
 package com.dmakarov.model;
 
-import java.util.List;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -15,31 +15,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "DEPLOYMENT")
+@Table(name = "USER")
 @Builder(toBuilder = true)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Setter(value = AccessLevel.PACKAGE)
 @Getter
-public class DeploymentEntity {
+public class UserEntity {
   @Id
   @GeneratedValue
   private Long id;
-
-  private String namespace;
-
   @Column(unique = true)
-  private String name;
-
-  private String image;
-
-  private int replicasCount;
-
+  private String email;
+  private String password;
   @ElementCollection
-  private List<String> commands;
-
-  @ElementCollection
-  private List<String> args;
-
-  private int port;
+  private Set<String> roles;
 }

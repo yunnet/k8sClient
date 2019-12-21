@@ -1,4 +1,4 @@
-package com.dmakarov.config;
+package com.dmakarov.config.filter;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;

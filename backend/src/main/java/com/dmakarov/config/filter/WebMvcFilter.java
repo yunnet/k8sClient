@@ -1,4 +1,4 @@
-package com.dmakarov.config;
+package com.dmakarov.config.filter;
 
 import static com.dmakarov.ApiPathsV1.H2_CONSOLE;
 import static com.dmakarov.ApiPathsV1.ROOT;
