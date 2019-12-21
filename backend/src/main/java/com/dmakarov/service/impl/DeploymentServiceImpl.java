@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 public class DeploymentServiceImpl implements DeploymentService {
-  public static final String STATUS_SEPARATOR = "/";
+  private static final String STATUS_SEPARATOR = "/";
   private final DeploymentRepository repository;
   private final KubernetesService kubernetesService;
 
@@ -43,10 +43,10 @@ public class DeploymentServiceImpl implements DeploymentService {
         .port(deploymentDto.getPort())
         .build();
 
-    // Deploy to K8s, if no errors or exceptions save entity
-    kubernetesService.deploy(newDeploymentEntity);
-
     DeploymentEntity deploymentEntity = repository.save(newDeploymentEntity);
+
+    kubernetesService.deployAsync(newDeploymentEntity)
+        .exceptionally((error) -> handleException(newDeploymentEntity, error));
 
     return getDeploymentDto(deploymentEntity);
   }
@@ -72,10 +72,10 @@ public class DeploymentServiceImpl implements DeploymentService {
         .port(deploymentDto.getPort())
         .build();
 
-    // Deploy to K8s, if no errors or exceptions save entity
-    kubernetesService.updateDeployment(updatedDeploymentEntity);
-
     DeploymentEntity deploymentEntity = repository.save(updatedDeploymentEntity);
+
+    kubernetesService.updateDeploymentAsync(updatedDeploymentEntity)
+        .exceptionally((error) -> handleException(updatedDeploymentEntity, error));
 
     return getDeploymentDto(deploymentEntity);
   }
@@ -89,10 +89,10 @@ public class DeploymentServiceImpl implements DeploymentService {
       throw new ClientException(HttpStatus.BAD_REQUEST, "Deployment not found");
     }
 
-    // Delete DEPLOYMENT_FUNCTION in K8s, if no errors or exceptions delete entity
-    kubernetesService.deleteDeployment(existedDeployment);
-
     repository.delete(existedDeployment);
+
+    kubernetesService.deleteDeploymentAsync(existedDeployment)
+        .exceptionally((error) -> handleException(existedDeployment, error));
   }
 
   @Override
@@ -132,6 +132,13 @@ public class DeploymentServiceImpl implements DeploymentService {
                 )
                 .build())
         .collect(Collectors.toList());
+  }
+
+  private Void handleException(DeploymentEntity deploymentEntity, Throwable error) {
+    log.error("Exception occurred while async operation, deployment {}, {}", deploymentEntity,
+        error);
+    // TODO handle revert of DeploymentEntity data in DB after errored operation
+    return null;
   }
 
   private String getStatus(Deployment deployment) {

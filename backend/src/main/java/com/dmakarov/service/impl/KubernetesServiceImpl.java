@@ -11,6 +11,8 @@ import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,63 +23,21 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class KubernetesServiceImpl implements KubernetesService {
   private final Config config;
+  private final Executor asyncExecutor;
 
   @Override
-  public void deploy(DeploymentEntity deploymentEntity) {
-    try (KubernetesClient client = new DefaultKubernetesClient(config)) {
-      Deployment deployment = DEPLOYMENT_FUNCTION.apply(deploymentEntity);
-
-      Deployment createdDeployment = client.apps().deployments()
-          .inNamespace(deploymentEntity.getNamespace())
-          .create(deployment);
-      log.info("Created DEPLOYMENT_FUNCTION {}", createdDeployment);
-    } catch (KubernetesClientException e) {
-      log.error("K8s create request error {}", e.getMessage());
-      throw new ClientException(HttpStatus.INTERNAL_SERVER_ERROR, "K8s request error");
-    }
+  public CompletableFuture<Void> deployAsync(DeploymentEntity deploymentEntity) {
+    return CompletableFuture.runAsync(() -> deploy(deploymentEntity), asyncExecutor);
   }
 
   @Override
-  public void updateDeployment(DeploymentEntity deploymentEntity) {
-    try (KubernetesClient client = new DefaultKubernetesClient(config)) {
-      Deployment deployment = DEPLOYMENT_FUNCTION.apply(deploymentEntity);
-
-      Deployment createdDeployment = client.apps().deployments()
-          .inNamespace(deploymentEntity.getNamespace())
-          .createOrReplace(deployment);
-
-      client.apps().deployments()
-          .inNamespace(deploymentEntity.getNamespace())
-          .withName(deploymentEntity.getName()).edit()
-          .editSpec()
-          .withReplicas(deploymentEntity.getReplicasCount())
-          .endSpec()
-          .done();
-
-      log.info("Updated DEPLOYMENT_FUNCTION {}", createdDeployment);
-    } catch (KubernetesClientException e) {
-      log.error("K8s update request error {}", e.getMessage());
-      throw new ClientException(HttpStatus.INTERNAL_SERVER_ERROR, "K8s request error");
-    }
+  public CompletableFuture<Void> updateDeploymentAsync(DeploymentEntity deploymentEntity) {
+    return CompletableFuture.runAsync(() -> updateDeployment(deploymentEntity), asyncExecutor);
   }
 
   @Override
-  public boolean deleteDeployment(DeploymentEntity deploymentEntity) {
-    boolean status;
-    try (KubernetesClient client = new DefaultKubernetesClient(config)) {
-      Deployment deployment = DEPLOYMENT_FUNCTION.apply(deploymentEntity);
-
-      status = client.apps().deployments()
-          .inNamespace(deploymentEntity.getNamespace())
-          .delete(deployment);
-
-      log.info("Deployment deleted: {}", deploymentEntity.getName());
-    } catch (KubernetesClientException e) {
-      log.error("K8s delete request error {}", e.getMessage());
-      status = false;
-    }
-
-    return status;
+  public CompletableFuture<Void> deleteDeploymentAsync(DeploymentEntity deploymentEntity) {
+    return CompletableFuture.runAsync(() -> deleteDeployment(deploymentEntity), asyncExecutor);
   }
 
   @Override
@@ -99,4 +59,50 @@ public class KubernetesServiceImpl implements KubernetesService {
       throw new ClientException(HttpStatus.INTERNAL_SERVER_ERROR, "K8s request error");
     }
   }
+
+  private void deploy(DeploymentEntity deploymentEntity) {
+    try (KubernetesClient client = new DefaultKubernetesClient(config)) {
+      Deployment deployment = DEPLOYMENT_FUNCTION.apply(deploymentEntity);
+
+      Deployment createdDeployment = client.apps().deployments()
+          .inNamespace(deploymentEntity.getNamespace())
+          .create(deployment);
+      log.info("Created Deployment {}", createdDeployment);
+    } catch (KubernetesClientException e) {
+      log.error("K8s create request error {}", e.getMessage());
+      throw new ClientException(HttpStatus.INTERNAL_SERVER_ERROR, "K8s request error");
+    }
+  }
+
+  private void updateDeployment(DeploymentEntity deploymentEntity) {
+    try (KubernetesClient client = new DefaultKubernetesClient(config)) {
+      client.apps().deployments()
+          .inNamespace(deploymentEntity.getNamespace())
+          .withName(deploymentEntity.getName())
+          .edit()
+          .editSpec()
+          .withReplicas(deploymentEntity.getReplicasCount())
+          .endSpec()
+          .done();
+
+      log.info("Updated Deployment {}", deploymentEntity.getName());
+    } catch (KubernetesClientException e) {
+      log.error("K8s update request error {}", e.getMessage());
+      throw new ClientException(HttpStatus.INTERNAL_SERVER_ERROR, "K8s request error");
+    }
+  }
+
+  private void deleteDeployment(DeploymentEntity deploymentEntity) {
+    try (KubernetesClient client = new DefaultKubernetesClient(config)) {
+      client.apps().deployments()
+          .inNamespace(deploymentEntity.getNamespace())
+          .withName(deploymentEntity.getName())
+          .delete();
+
+      log.info("Deployment deleted: {}", deploymentEntity.getName());
+    } catch (KubernetesClientException e) {
+      log.error("K8s delete request error {}", e.getMessage());
+    }
+  }
+
 }
