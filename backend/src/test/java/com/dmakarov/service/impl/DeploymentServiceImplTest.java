@@ -1,6 +1,9 @@
 package com.dmakarov.service.impl;
 
-import static com.dmakarov.deployment.DeploymentFactory.DEPLOYMENT_FUNCTION;
+import static com.dmakarov.DeploymentUtils.getDeployment;
+import static com.dmakarov.DeploymentUtils.getDeploymentDto;
+import static com.dmakarov.DeploymentUtils.getDeploymentEntity;
+import static com.dmakarov.DeploymentUtils.getDeploymentList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -14,7 +17,6 @@ import com.dmakarov.model.dto.DeploymentDto;
 import com.dmakarov.service.KubernetesService;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentList;
-import io.fabric8.kubernetes.api.model.apps.DeploymentStatus;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -83,7 +85,7 @@ class DeploymentServiceImplTest {
   }
 
   @Test
-  void getDeployment() {
+  void getDeployment_success() {
     DeploymentDto deploymentDto = getDeploymentDto();
     DeploymentEntity deploymentEntity = getDeploymentEntity(deploymentDto);
     Deployment deployment = getDeployment(deploymentEntity);
@@ -99,7 +101,7 @@ class DeploymentServiceImplTest {
   }
 
   @Test
-  void getDeployments() {
+  void getDeployments_success() {
     DeploymentDto deploymentDto = getDeploymentDto();
     DeploymentEntity deploymentEntity = getDeploymentEntity(deploymentDto);
     DeploymentList deploymentList = getDeploymentList(deploymentEntity);
@@ -113,42 +115,4 @@ class DeploymentServiceImplTest {
     assertThat(result.size(), is(1));
   }
 
-  private DeploymentDto getDeploymentDto() {
-    int port = 8080;
-    return DeploymentDto.builder()
-        .namespace("namespace")
-        .name("name")
-        .image("image")
-        .replicasCount(1)
-        .port(port)
-        .build();
-  }
-
-  private DeploymentEntity getDeploymentEntity(DeploymentDto deploymentDto) {
-    return DeploymentEntity.builder()
-        .namespace(deploymentDto.getNamespace())
-        .name(deploymentDto.getName())
-        .image(deploymentDto.getImage())
-        .replicasCount(deploymentDto.getReplicasCount())
-        .commands(deploymentDto.getCommands())
-        .args(deploymentDto.getArgs())
-        .port(deploymentDto.getPort())
-        .build();
-  }
-
-  private Deployment getDeployment(DeploymentEntity deploymentEntity) {
-    Deployment deployment = DEPLOYMENT_FUNCTION.apply(deploymentEntity);
-    DeploymentStatus deploymentStatus = new DeploymentStatus();
-    deploymentStatus.setReadyReplicas(1);
-    deploymentStatus.setReplicas(1);
-    deployment.setStatus(deploymentStatus);
-    return deployment;
-  }
-
-  private DeploymentList getDeploymentList(DeploymentEntity deploymentEntity) {
-    Deployment deployment = getDeployment(deploymentEntity);
-    DeploymentList deploymentList = new DeploymentList();
-    deploymentList.setItems(List.of(deployment));
-    return deploymentList;
-  }
 }

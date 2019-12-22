@@ -3,6 +3,7 @@ package com.dmakarov.controller;
 import static com.dmakarov.ApiPathsV1.DEPLOYMENT;
 import static com.dmakarov.ApiPathsV1.NAMESPACE;
 import static com.dmakarov.ApiPathsV1.ROOT;
+import static com.dmakarov.DeploymentUtils.getDeploymentDto;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
@@ -36,10 +37,6 @@ import org.springframework.test.web.servlet.MockMvc;
 @ExtendWith(SpringExtension.class)
 @ControllerTest(DeploymentsController.class)
 class DeploymentsControllerTest {
-  private String namespace = RandomString.make(10);
-  private String name = RandomString.make(10);
-  private String image = RandomString.make(10);
-  private int port = 8080;
   @Autowired
   private MockMvc mockMvc;
 
@@ -48,14 +45,15 @@ class DeploymentsControllerTest {
 
   @Test
   void createDeployment() throws Exception {
-    DeploymentDto deploymentDto = getDeploymentDto(port);
+    DeploymentDto deploymentDto = getDeploymentDto(8080);
 
     when(service.createDeployment(anyString(), any(DeploymentDto.class)))
         .thenReturn(deploymentDto);
 
     this.mockMvc
         .perform(
-            post(ROOT + NAMESPACE + "/{namespace}" + DEPLOYMENT, namespace)
+            post(ROOT + NAMESPACE + "/{namespace}" + DEPLOYMENT,
+                deploymentDto.getNamespace())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(deploymentDto))
         )
@@ -73,7 +71,8 @@ class DeploymentsControllerTest {
 
     this.mockMvc
         .perform(
-            post(ROOT + NAMESPACE + "/{namespace}" + DEPLOYMENT, namespace)
+            post(ROOT + NAMESPACE + "/{namespace}" + DEPLOYMENT,
+                deploymentDto.getNamespace())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(deploymentDto))
         )
@@ -89,7 +88,7 @@ class DeploymentsControllerTest {
     this.mockMvc
         .perform(
             get(ROOT + NAMESPACE + "/{namespace}" + DEPLOYMENT + "/{deploymentName}",
-                namespace, name)
+                deploymentDto.getNamespace(), deploymentDto.getName())
                 .contentType(MediaType.APPLICATION_JSON)
         )
         .andExpect(status().isOk())
@@ -119,7 +118,8 @@ class DeploymentsControllerTest {
 
     this.mockMvc
         .perform(
-            get(ROOT + NAMESPACE + "/{namespace}" + DEPLOYMENT, namespace)
+            get(ROOT + NAMESPACE + "/{namespace}" + DEPLOYMENT,
+                firstDeployment.getNamespace())
                 .contentType(MediaType.APPLICATION_JSON)
         )
         .andExpect(status().isOk())
@@ -129,7 +129,7 @@ class DeploymentsControllerTest {
 
   @Test
   void updateDeployment() throws Exception {
-    DeploymentDto deploymentDto = getDeploymentDto(port);
+    DeploymentDto deploymentDto = getDeploymentDto(8080);
 
     when(service.updateDeployment(anyString(), anyString(), any(DeploymentDto.class)))
         .thenReturn(deploymentDto);
@@ -137,7 +137,7 @@ class DeploymentsControllerTest {
     this.mockMvc
         .perform(
             put(ROOT + NAMESPACE + "/{namespace}" + DEPLOYMENT + "/{deploymentName}",
-                namespace, name)
+                deploymentDto.getNamespace(), deploymentDto.getName())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(deploymentDto))
         )
@@ -156,7 +156,7 @@ class DeploymentsControllerTest {
     this.mockMvc
         .perform(
             put(ROOT + NAMESPACE + "/{namespace}" + DEPLOYMENT + "/{deploymentName}",
-                namespace, name)
+                deploymentDto.getNamespace(), deploymentDto.getName())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(deploymentDto))
         )
@@ -170,8 +170,7 @@ class DeploymentsControllerTest {
     this.mockMvc
         .perform(
             delete(ROOT + NAMESPACE + "/{namespace}" + DEPLOYMENT + "/{deploymentName}",
-                namespace,
-                name)
+                deploymentDto.getNamespace(),deploymentDto.getName())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(deploymentDto))
         )
@@ -188,31 +187,11 @@ class DeploymentsControllerTest {
     this.mockMvc
         .perform(
             delete(ROOT + NAMESPACE + "/{namespace}" + DEPLOYMENT + "/{deploymentName}",
-                namespace,
-                name)
+                deploymentDto.getNamespace(), deploymentDto.getName())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(deploymentDto))
         )
         .andExpect(status().isBadRequest());
-  }
-
-  private DeploymentDto getDeploymentDto(int port) {
-    return DeploymentDto.builder()
-        .namespace(namespace)
-        .name(name)
-        .image(image)
-        .replicasCount(1)
-        .port(port)
-        .build();
-  }
-
-  private DeploymentDto getDeploymentDto() {
-    return DeploymentDto.builder()
-        .namespace(namespace)
-        .name(name)
-        .image(image)
-        .replicasCount(1)
-        .build();
   }
 
   /**

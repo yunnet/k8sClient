@@ -101,6 +101,8 @@ $ curl -X GET \
 
 Frontend is available under 
 [frontend](http://localhost:8080)
+User Name: admin@admin.com
+Password: adminPassword
 
 # H2 Database
 H2 Database console is available under 

@@ -10,7 +10,6 @@ import com.dmakarov.model.exception.ClientException;
 import com.dmakarov.service.JwtTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,7 +28,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(ROOT)
-@Profile("!test")
 public class JwtAuthenticationController {
 
   private final AuthenticationManager authenticationManager;

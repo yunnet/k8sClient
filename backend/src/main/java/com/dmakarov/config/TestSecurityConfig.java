@@ -1,7 +1,5 @@
 package com.dmakarov.config;
 
-import static com.dmakarov.ApiPathsV1.H2_CONSOLE;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,10 +21,7 @@ public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
         .authorizeRequests()
         .and()
         .csrf().disable()
-        .authorizeRequests().antMatchers("/").permitAll().and().authorizeRequests()
-        .antMatchers(H2_CONSOLE + "/**").permitAll();
-
-    http.headers().frameOptions().disable();
+        .authorizeRequests().anyRequest().permitAll();
   }
 
   @Bean
