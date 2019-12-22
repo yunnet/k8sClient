@@ -6,7 +6,8 @@
     3. Kubectl
 
 # Installation and Run 
-Use target directory script to build and test sources
+Use target directory script to build and test sources, code coverage would be available in
+***backend/target/site/jacoco/index.html*** file
 ```#!bash
 $ ./runner.sh test
 ```

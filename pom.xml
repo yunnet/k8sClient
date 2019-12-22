@@ -34,8 +34,8 @@
     <javax.xml.bind.version>2.3.0</javax.xml.bind.version>
     <jaxb-runtime.version>2.3.2</jaxb-runtime.version>
 
-    <junit.jupiter.version>5.5.1</junit.jupiter.version>
-    <mockito.version>2.23.0</mockito.version>
+    <junit.jupiter.version>5.5.2</junit.jupiter.version>
+    <mockito.version>3.2.4</mockito.version>
     <assertj-core.version>3.11.1</assertj-core.version>
     <hamcrest.version>2.1-rc3</hamcrest.version>
   </properties>
@@ -216,6 +216,36 @@
             <version>${checkstyle.version}</version>
           </dependency>
         </dependencies>
+      </plugin>
+
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.2</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <!-- attached to Maven test phase -->
+          <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <excludes>
+            <exclude>com/dmakarov/config/**/*</exclude>
+            <exclude>com/dmakarov/model/**/*</exclude>
+            <exclude>com/dmakarov/starter/**/*</exclude>
+            <exclude>com/dmakarov/deployment/**/*</exclude>
+            <exclude>com/dmakarov/dao/**/*</exclude>
+          </excludes>
+        </configuration>
       </plugin>
     </plugins>
     <pluginManagement>
