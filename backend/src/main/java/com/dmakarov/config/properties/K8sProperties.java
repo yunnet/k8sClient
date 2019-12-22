@@ -12,6 +12,4 @@ public class K8sProperties {
   private String endpoint;
 
   private String defaultNamespace;
-
-  private String authToken;
 }
