@@ -13,9 +13,14 @@ class DeploymentInputForm extends React.Component {
     handleSubmit = async (event) => {
         event.preventDefault();
 
+        const token = localStorage.token;
         const response = Axios({
             method: 'post',
             url: `http://localhost:8080/api/k8sclient/v1/namespace/${this.state.namespace}/deployment`,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
             data: {
                 namespace: this.state.namespace,
                 name: this.state.name,

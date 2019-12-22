@@ -6,8 +6,18 @@ class NamespaceInputForm extends React.Component {
 
     handleSubmit = async (event) => {
         event.preventDefault();
-        const resp = await Axios.get(`http://localhost:8080/api/k8sclient/v1/namespace/${this.state.namespace}/deployment`);
-        this.props.onSubmit(resp.data);
+
+        const token = localStorage.token;
+        const response = await Axios({
+            method: 'get',
+            url: `http://localhost:8080/api/k8sclient/v1/namespace/${this.state.namespace}/deployment`,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        this.props.onSubmit(response.data);
         this.setState({namespace: ''});
     };
 

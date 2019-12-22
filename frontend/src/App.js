@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import Deployments from "./components/deployments";
 import NamespaceInputForm from "./components/namespaceInputForm";
 import DeploymentInputForm from "./components/deploymentInputForm";
+import LoginInputForm from "./components/loginInputForm";
 
 class App extends Component {
     state = {
@@ -17,6 +18,9 @@ class App extends Component {
             <div className="container">
                 <div className="row mb-3">
                     <div className="col-md-3">
+                        <div className="my-3 p-3 bg-white rounded shadow-sm">
+                            <LoginInputForm/>
+                        </div>
                         <div className="my-3 p-3 bg-white rounded shadow-sm">
                             <DeploymentInputForm/>
                         </div>
