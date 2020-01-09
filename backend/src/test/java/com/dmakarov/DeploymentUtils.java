@@ -42,7 +42,7 @@ public class DeploymentUtils {
   /**
    * Returns DeploymentEntity from DeploymentDto.
    */
-  public static DeploymentEntity getDeploymentEntity(DeploymentDto deploymentDto) {
+  public static DeploymentEntity getDeploymentEntity(DeploymentDto deploymentDto, String status) {
     return DeploymentEntity.builder()
         .namespace(deploymentDto.getNamespace())
         .name(deploymentDto.getName())
@@ -51,6 +51,7 @@ public class DeploymentUtils {
         .commands(deploymentDto.getCommands())
         .args(deploymentDto.getArgs())
         .port(deploymentDto.getPort())
+        .status(status)
         .build();
   }
 

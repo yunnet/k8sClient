@@ -57,4 +57,9 @@ public class DeploymentDto {
    * Deployment status. Shows "Available"/"Requested" replicas. Example: 2/2
    */
   String status;
+
+  /**
+   * Status.
+   */
+  String deploymentStatus;
 }

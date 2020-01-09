@@ -42,4 +42,6 @@ public class DeploymentEntity {
   private List<String> args;
 
   private int port;
+
+  String status = "";
 }

@@ -29,8 +29,15 @@ public class DeploymentServiceImpl implements DeploymentService {
         .findByNamespaceAndName(namespace, deploymentDto.getName());
 
     if (existedDeployment != null) {
-      throw new ClientException(HttpStatus.BAD_REQUEST, "Deployment in provided namespace with "
-          + "this name already exist");
+      String status = Optional.ofNullable(existedDeployment.getStatus()).orElse("");
+      if (status.equals("CREATED")) {
+        return getDeploymentDto(existedDeployment);
+      }
+
+      if (status.equals("DEPLOYED") || status.equals("ERRORED")) {
+        throw new ClientException(HttpStatus.BAD_REQUEST, "Deployment in provided namespace with "
+            + "this name already exist, check deployment status");
+      }
     }
 
     DeploymentEntity newDeploymentEntity = DeploymentEntity.builder()
@@ -41,11 +48,30 @@ public class DeploymentServiceImpl implements DeploymentService {
         .commands(deploymentDto.getCommands())
         .args(deploymentDto.getArgs())
         .port(deploymentDto.getPort())
+        .status("CREATED")
         .build();
 
     DeploymentEntity deploymentEntity = repository.save(newDeploymentEntity);
 
     kubernetesService.deployAsync(newDeploymentEntity)
+        .thenRun(() -> {
+          DeploymentEntity entity = repository
+              .findByNamespaceAndName(namespace, deploymentDto.getName());
+
+          DeploymentEntity succededEntity = DeploymentEntity.builder()
+              .id(entity.getId())
+              .namespace(entity.getNamespace())
+              .name(entity.getName())
+              .image(entity.getImage())
+              .replicasCount(entity.getReplicasCount())
+              .commands(entity.getCommands())
+              .args(entity.getArgs())
+              .port(entity.getPort())
+              .status("DEPLOYED")
+              .build();
+
+          repository.save(succededEntity);
+        })
         .exceptionally((error) -> handleException(newDeploymentEntity, error));
 
     return getDeploymentDto(deploymentEntity);
@@ -138,6 +164,21 @@ public class DeploymentServiceImpl implements DeploymentService {
     log.error("Exception occurred while async operation, deployment {}, {}", deploymentEntity,
         error);
     // TODO handle revert of DeploymentEntity data in DB after errored operation
+
+    DeploymentEntity failedEntity = DeploymentEntity.builder()
+        .id(deploymentEntity.getId())
+        .namespace(deploymentEntity.getNamespace())
+        .name(deploymentEntity.getName())
+        .image(deploymentEntity.getImage())
+        .replicasCount(deploymentEntity.getReplicasCount())
+        .commands(deploymentEntity.getCommands())
+        .args(deploymentEntity.getArgs())
+        .port(deploymentEntity.getPort())
+        .status("ERRORED")
+        .build();
+
+    repository.save(failedEntity);
+
     return null;
   }
 
@@ -156,6 +197,7 @@ public class DeploymentServiceImpl implements DeploymentService {
         .commands(deploymentEntity.getCommands())
         .args(deploymentEntity.getArgs())
         .port(deploymentEntity.getPort())
+        .status(deploymentEntity.getStatus())
         .build();
   }
 }

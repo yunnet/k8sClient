@@ -6,14 +6,17 @@ import static com.dmakarov.DeploymentUtils.getDeploymentEntity;
 import static com.dmakarov.DeploymentUtils.getDeploymentList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.dmakarov.dao.DeploymentRepository;
 import com.dmakarov.model.DeploymentEntity;
 import com.dmakarov.model.dto.DeploymentDto;
+import com.dmakarov.model.exception.ClientException;
 import com.dmakarov.service.KubernetesService;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentList;
@@ -37,9 +40,9 @@ class DeploymentServiceImplTest {
   private DeploymentServiceImpl service;
 
   @Test
-  void createDeployment() {
+  void createDeployment_newDeployment() {
     DeploymentDto deploymentDto = getDeploymentDto();
-    DeploymentEntity deploymentEntity = getDeploymentEntity(deploymentDto);
+    DeploymentEntity deploymentEntity = getDeploymentEntity(deploymentDto, "DEPLOYED");
 
     when(repository.save(any(DeploymentEntity.class))).thenReturn(deploymentEntity);
     when(kubernetesService.deployAsync(any(DeploymentEntity.class)))
@@ -53,9 +56,45 @@ class DeploymentServiceImplTest {
   }
 
   @Test
+  void createDeployment_erroredDeployment() {
+    DeploymentDto deploymentDto = getDeploymentDto();
+    DeploymentEntity deploymentEntity = getDeploymentEntity(deploymentDto, "ERRORED");
+
+    when(repository.findByNamespaceAndName(anyString(), anyString())).thenReturn(deploymentEntity);
+
+    assertThrows(ClientException.class, () -> service.createDeployment(deploymentDto.getNamespace(),
+        deploymentDto));
+  }
+
+  @Test
+  void createDeployment_createdDeployment() {
+    DeploymentDto deploymentDto = getDeploymentDto();
+    DeploymentEntity deploymentEntity = getDeploymentEntity(deploymentDto, "CREATED");
+
+    when(repository.findByNamespaceAndName(anyString(), anyString())).thenReturn(deploymentEntity);
+
+    DeploymentDto deployment = service.createDeployment(deploymentDto.getNamespace(),
+        deploymentDto);
+
+    verify(kubernetesService, times(0)).deployAsync(any(DeploymentEntity.class));
+    assertThat(deployment.getName(), is(deploymentDto.getName()));
+  }
+
+  @Test
+  void createDeployment_deployedDeployment() {
+    DeploymentDto deploymentDto = getDeploymentDto();
+    DeploymentEntity deploymentEntity = getDeploymentEntity(deploymentDto, "DEPLOYED");
+
+    when(repository.findByNamespaceAndName(anyString(), anyString())).thenReturn(deploymentEntity);
+
+    assertThrows(ClientException.class, () -> service.createDeployment(deploymentDto.getNamespace(),
+        deploymentDto));
+  }
+
+  @Test
   void updateDeployment() {
     DeploymentDto deploymentDto = getDeploymentDto();
-    DeploymentEntity deploymentEntity = getDeploymentEntity(deploymentDto);
+    DeploymentEntity deploymentEntity = getDeploymentEntity(deploymentDto, "DEPLOYED");
 
     when(repository.findByNamespaceAndName(anyString(), anyString())).thenReturn(deploymentEntity);
     when(repository.save(any(DeploymentEntity.class))).thenReturn(deploymentEntity);
@@ -72,7 +111,7 @@ class DeploymentServiceImplTest {
   @Test
   void deleteDeployment() {
     DeploymentDto deploymentDto = getDeploymentDto();
-    DeploymentEntity deploymentEntity = getDeploymentEntity(deploymentDto);
+    DeploymentEntity deploymentEntity = getDeploymentEntity(deploymentDto, "DEPLOYED");
 
     when(repository.findByNamespaceAndName(anyString(), anyString())).thenReturn(deploymentEntity);
     when(kubernetesService.deleteDeploymentAsync(any(DeploymentEntity.class)))
@@ -87,7 +126,7 @@ class DeploymentServiceImplTest {
   @Test
   void getDeployment_success() {
     DeploymentDto deploymentDto = getDeploymentDto();
-    DeploymentEntity deploymentEntity = getDeploymentEntity(deploymentDto);
+    DeploymentEntity deploymentEntity = getDeploymentEntity(deploymentDto, "DEPLOYED");
     Deployment deployment = getDeployment(deploymentEntity);
 
     when(kubernetesService.getDeployment(anyString(), anyString()))
@@ -103,7 +142,7 @@ class DeploymentServiceImplTest {
   @Test
   void getDeployments_success() {
     DeploymentDto deploymentDto = getDeploymentDto();
-    DeploymentEntity deploymentEntity = getDeploymentEntity(deploymentDto);
+    DeploymentEntity deploymentEntity = getDeploymentEntity(deploymentDto, "DEPLOYED");
     DeploymentList deploymentList = getDeploymentList(deploymentEntity);
 
     when(kubernetesService.getDeployments(anyString()))
