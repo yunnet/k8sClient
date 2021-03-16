@@ -23,7 +23,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <checkstyle.config.location>checkstyle.xml</checkstyle.config.location>
-    <checkstyle.version>8.18</checkstyle.version>
+    <checkstyle.version>8.29</checkstyle.version>
 
     <spring.boot.version>2.2.2.RELEASE</spring.boot.version>
     <spring.version>5.2.1.RELEASE</spring.version>
