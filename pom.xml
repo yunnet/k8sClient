@@ -29,7 +29,7 @@
     <spring.version>5.2.1.RELEASE</spring.version>
     <lombok.version>1.18.4</lombok.version>
     <kubernetes-java-client.version>4.4.1</kubernetes-java-client.version>
-    <h2.version>1.4.200</h2.version>
+    <h2.version>2.1.210</h2.version>
     <io.jsonwebtoken.version>0.9.1</io.jsonwebtoken.version>
     <javax.xml.bind.version>2.3.0</javax.xml.bind.version>
     <jaxb-runtime.version>2.3.2</jaxb-runtime.version>
