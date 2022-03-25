@@ -1,8 +1,11 @@
 package com.dmakarov.service;
 
 import com.dmakarov.model.DeploymentEntity;
+import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentList;
+
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -39,4 +42,6 @@ public interface KubernetesService {
    * @return namespace deployments
    */
   DeploymentList getDeployments(String namespace);
+
+  List<Namespace> getNamespaceList();
 }

@@ -3,38 +3,42 @@ import Axios from 'axios';
 
 class LoginInputForm extends React.Component {
     state = {
-        email: '',
-        password: ''
+        email: 'admin@admin.com',
+        password: 'adminPassword',
+        loginOk: false
     };
 
     handleSubmit = async (event) => {
         event.preventDefault();
-        const response = await Axios({
+        const res = await Axios({
             method: 'post',
             url: `http://localhost:8080/api/k8sclient/v1/login`,
             data: {
                 email: this.state.email,
                 password: this.state.password
             }
-        })
-            .then(function (response) {
-                //handle success
-                alert("Login successful.");
-                localStorage.setItem("token", response.data.jwtToken);
-                console.log(response);
+        }).then( response =>{
+            //handle success
+            alert("Login successful.");
+            localStorage.setItem("token", response.data.jwtToken);
+            console.log(response);
+            this.setState({
+                loginOk: true
             })
-            .catch(function (response) {
-                //handle error
-                alert("Login error: Message:" + response.data.message);
-                console.log(response);
-            });
+        }).catch(function (response) {
+            debugger
+            //handle error
+            alert("Login error: Message:" + response.message);
+            console.log(response);
+        });
 
-        this.setState(
-            {
-                email: '',
-                password: ''
-            }
-        );
+        // this.setState(
+        //     {
+        //         email: '',
+        //         password: '',
+        //         loginOk: false
+        //     }
+        // );
     };
 
     render() {
@@ -49,6 +53,7 @@ class LoginInputForm extends React.Component {
                            value={this.state.email}
                            onChange={event => this.setState({email: event.target.value})}
                            required
+                           disabled={this.state.loginOk}
                     />
                 </div>
                 <div className="form-group">
@@ -60,6 +65,7 @@ class LoginInputForm extends React.Component {
                            value={this.state.password}
                            onChange={event => this.setState({password: event.target.value})}
                            required
+                           disabled={this.state.loginOk}
                     />
                 </div>
                 <button type="submit" className="btn btn-primary">Login</button>

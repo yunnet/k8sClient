@@ -6,13 +6,19 @@ import com.dmakarov.model.dto.DeploymentDto;
 import com.dmakarov.model.exception.ClientException;
 import com.dmakarov.service.DeploymentService;
 import com.dmakarov.service.KubernetesService;
+import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import io.fabric8.zjsonpatch.internal.guava.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,9 +30,8 @@ public class DeploymentServiceImpl implements DeploymentService {
   private final KubernetesService kubernetesService;
 
   @Override
-  public DeploymentDto createDeployment(String namespace, DeploymentDto deploymentDto) {
-    DeploymentEntity existedDeployment = repository
-        .findByNamespaceAndName(namespace, deploymentDto.getName());
+  public DeploymentDto createDeployment(String namespace, DeploymentDto dto) {
+    DeploymentEntity existedDeployment = repository.findByNamespaceAndName(namespace, dto.getName());
 
     if (existedDeployment != null) {
       String status = Optional.ofNullable(existedDeployment.getStatus()).orElse("");
@@ -42,21 +47,19 @@ public class DeploymentServiceImpl implements DeploymentService {
 
     DeploymentEntity newDeploymentEntity = DeploymentEntity.builder()
         .namespace(namespace)
-        .name(deploymentDto.getName())
-        .image(deploymentDto.getImage())
-        .replicasCount(deploymentDto.getReplicasCount())
-        .commands(deploymentDto.getCommands())
-        .args(deploymentDto.getArgs())
-        .port(deploymentDto.getPort())
+        .name(dto.getName())
+        .image(dto.getImage())
+        .replicasCount(dto.getReplicasCount())
+        .commands(dto.getCommands())
+        .args(dto.getArgs())
+        .port(dto.getPort())
         .status("CREATED")
         .build();
 
     DeploymentEntity deploymentEntity = repository.save(newDeploymentEntity);
 
-    kubernetesService.deployAsync(newDeploymentEntity)
-        .thenRun(() -> {
-          DeploymentEntity entity = repository
-              .findByNamespaceAndName(namespace, deploymentDto.getName());
+    kubernetesService.deployAsync(newDeploymentEntity).thenRun(() -> {
+          DeploymentEntity entity = repository.findByNamespaceAndName(namespace, dto.getName());
 
           DeploymentEntity succededEntity = DeploymentEntity.builder()
               .id(entity.getId())
@@ -71,17 +74,14 @@ public class DeploymentServiceImpl implements DeploymentService {
               .build();
 
           repository.save(succededEntity);
-        })
-        .exceptionally((error) -> handleException(newDeploymentEntity, error));
+        }).exceptionally((error) -> handleException(newDeploymentEntity, error));
 
     return getDeploymentDto(deploymentEntity);
   }
 
   @Override
-  public DeploymentDto updateDeployment(String namespace, String deploymentName,
-      DeploymentDto deploymentDto) {
-    DeploymentEntity existedDeployment = repository
-        .findByNamespaceAndName(namespace, deploymentName);
+  public DeploymentDto updateDeployment(String namespace, String deploymentName, DeploymentDto dto) {
+    DeploymentEntity existedDeployment = repository.findByNamespaceAndName(namespace, deploymentName);
 
     if (existedDeployment == null) {
       throw new ClientException(HttpStatus.BAD_REQUEST, "Deployment not found");
@@ -90,12 +90,12 @@ public class DeploymentServiceImpl implements DeploymentService {
     DeploymentEntity updatedDeploymentEntity = DeploymentEntity.builder()
         .id(existedDeployment.getId())
         .namespace(existedDeployment.getNamespace())
-        .name(deploymentDto.getName())
-        .image(deploymentDto.getImage())
-        .replicasCount(deploymentDto.getReplicasCount())
-        .commands(deploymentDto.getCommands())
-        .args(deploymentDto.getArgs())
-        .port(deploymentDto.getPort())
+        .name(dto.getName())
+        .image(dto.getImage())
+        .replicasCount(dto.getReplicasCount())
+        .commands(dto.getCommands())
+        .args(dto.getArgs())
+        .port(dto.getPort())
         .build();
 
     DeploymentEntity deploymentEntity = repository.save(updatedDeploymentEntity);
@@ -108,8 +108,7 @@ public class DeploymentServiceImpl implements DeploymentService {
 
   @Override
   public void deleteDeployment(String namespace, String deploymentName) {
-    DeploymentEntity existedDeployment = repository
-        .findByNamespaceAndName(namespace, deploymentName);
+    DeploymentEntity existedDeployment = repository.findByNamespaceAndName(namespace, deploymentName);
 
     if (existedDeployment == null) {
       throw new ClientException(HttpStatus.BAD_REQUEST, "Deployment not found");
@@ -153,16 +152,19 @@ public class DeploymentServiceImpl implements DeploymentService {
                 .status(getStatus(deployment))
                 .replicasCount(deployment.getSpec().getReplicas())
                 .port(
-                    deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getPorts()
-                        .get(0).getContainerPort()
-                )
-                .build())
+                    deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getPorts().get(0).getContainerPort()
+                ).build())
         .collect(Collectors.toList());
   }
 
+  @Override
+  public List<String> getNamespaceList() {
+    List<Namespace> lists = kubernetesService.getNamespaceList();
+    return lists.stream().map(item -> item.getMetadata().getName()).collect(Collectors.toList());
+  }
+
   private Void handleException(DeploymentEntity deploymentEntity, Throwable error) {
-    log.error("Exception occurred while async operation, deployment {}, {}", deploymentEntity,
-        error);
+    log.error("Exception occurred while async operation, deployment {}, {}", deploymentEntity,  error);
     // TODO handle revert of DeploymentEntity data in DB after errored operation
 
     DeploymentEntity failedEntity = DeploymentEntity.builder()
@@ -178,7 +180,6 @@ public class DeploymentServiceImpl implements DeploymentService {
         .build();
 
     repository.save(failedEntity);
-
     return null;
   }
 

@@ -28,7 +28,7 @@
     <spring.boot.version>2.2.2.RELEASE</spring.boot.version>
     <spring.version>5.2.1.RELEASE</spring.version>
     <lombok.version>1.18.4</lombok.version>
-    <kubernetes-java-client.version>4.4.1</kubernetes-java-client.version>
+    <kubernetes-java-client.version>5.12.1</kubernetes-java-client.version>
     <h2.version>1.4.200</h2.version>
     <io.jsonwebtoken.version>0.9.1</io.jsonwebtoken.version>
     <javax.xml.bind.version>2.3.0</javax.xml.bind.version>
@@ -263,8 +263,9 @@
           </executions>
         </plugin>
         <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>2.4</version>
+          <version>3.2.2</version>
         </plugin>
       </plugins>
     </pluginManagement>

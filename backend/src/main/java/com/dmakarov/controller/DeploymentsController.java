@@ -9,6 +9,8 @@ import com.dmakarov.service.DeploymentService;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
+
+import io.fabric8.kubernetes.api.model.Namespace;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -31,9 +33,14 @@ public class DeploymentsController {
 
   private final DeploymentService service;
 
+  @GetMapping(NAMESPACE + "/list")
+  ResponseEntity<List<String>> getNamespaceList(){
+    log.info("Get Namespace request received");
+    return ResponseEntity.ok().body(service.getNamespaceList());
+  }
+
   @PostMapping(NAMESPACE + "/{namespace}" + DEPLOYMENT)
-  ResponseEntity<DeploymentDto> createDeployment(@PathVariable String namespace,
-      @Valid @RequestBody DeploymentDto deploymentDto) {
+  ResponseEntity<DeploymentDto> createDeployment(@PathVariable String namespace, @Valid @RequestBody DeploymentDto deploymentDto) {
     log.info("Create deployment request received, deployment {}", deploymentDto);
 
     DeploymentDto deployment = service.createDeployment(namespace, deploymentDto);
@@ -42,8 +49,7 @@ public class DeploymentsController {
   }
 
   @PutMapping(NAMESPACE + "/{namespace}" + DEPLOYMENT + "/{deploymentName}")
-  ResponseEntity<DeploymentDto> updateDeployment(@PathVariable String namespace,
-      @PathVariable String deploymentName, @Valid @RequestBody DeploymentDto deploymentDto) {
+  ResponseEntity<DeploymentDto> updateDeployment(@PathVariable String namespace, @PathVariable String deploymentName, @Valid @RequestBody DeploymentDto deploymentDto) {
     log.info("Update deployment request received, deployment {}", deploymentDto);
 
     DeploymentDto deployment = service.updateDeployment(namespace, deploymentName, deploymentDto);
@@ -52,15 +58,12 @@ public class DeploymentsController {
   }
 
   @GetMapping(NAMESPACE + "/{namespace}" + DEPLOYMENT + "/{deploymentName}")
-  ResponseEntity<DeploymentDto> getDeployment(@PathVariable String namespace,
-      @PathVariable String deploymentName) {
+  ResponseEntity<DeploymentDto> getDeployment(@PathVariable String namespace,  @PathVariable String deploymentName) {
     log.info("Get deployment request received, deployment {}", deploymentName);
 
     Optional<DeploymentDto> deployment = service.getDeployment(namespace, deploymentName);
 
-    return deployment.isPresent()
-        ? ResponseEntity.ok().body(deployment.get())
-        : ResponseEntity.notFound().build();
+    return deployment.map(deploymentDto -> ResponseEntity.ok().body(deploymentDto)).orElseGet(() -> ResponseEntity.notFound().build());
   }
 
   @GetMapping(NAMESPACE + "/{namespace}" + DEPLOYMENT)
@@ -73,8 +76,7 @@ public class DeploymentsController {
   }
 
   @DeleteMapping(NAMESPACE + "/{namespace}" + DEPLOYMENT + "/{deploymentName}")
-  ResponseEntity deleteDeployment(@PathVariable String namespace,
-      @PathVariable String deploymentName) {
+  ResponseEntity deleteDeployment(@PathVariable String namespace, @PathVariable String deploymentName) {
     log.info("Delete deployment request received, deployment {}", deploymentName);
 
     service.deleteDeployment(namespace, deploymentName);

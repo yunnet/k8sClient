@@ -2,7 +2,9 @@ import React from 'react';
 import Axios from 'axios';
 
 class NamespaceInputForm extends React.Component {
-    state = {namespace: ''};
+    state = {
+        namespace: ''
+    };
 
     handleSubmit = async (event) => {
         event.preventDefault();
@@ -18,7 +20,7 @@ class NamespaceInputForm extends React.Component {
         });
 
         this.props.onSubmit(response.data);
-        this.setState({namespace: ''});
+        // this.setState({namespace: ''});
     };
 
     render() {
@@ -31,7 +33,9 @@ class NamespaceInputForm extends React.Component {
                        onChange={event => this.setState({namespace: event.target.value})}
                        placeholder="Enter Namespace"
                        required
+                       allowClear
                 />
+                
                 <button type="submit" className="btn btn-primary">Get Deployments</button>
             </form>
         );

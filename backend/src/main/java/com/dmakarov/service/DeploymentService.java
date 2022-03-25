@@ -1,6 +1,9 @@
 package com.dmakarov.service;
 
 import com.dmakarov.model.dto.DeploymentDto;
+import io.fabric8.kubernetes.api.model.Namespace;
+import org.springframework.http.ResponseEntity;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -18,8 +21,7 @@ public interface DeploymentService {
    * Updates database entity and starts async update deployment process.
    * @return deployment dto
    */
-  DeploymentDto updateDeployment(String namespace, String deploymentName,
-      DeploymentDto deploymentDto);
+  DeploymentDto updateDeployment(String namespace, String deploymentName, DeploymentDto deploymentDto);
 
   /**
    * Deletes database entity and starts async delete deployment process.
@@ -35,4 +37,6 @@ public interface DeploymentService {
    * Returns all namespace deployments.
    */
   List<DeploymentDto> getDeployments(String namespace);
+
+  List<String> getNamespaceList();
 }

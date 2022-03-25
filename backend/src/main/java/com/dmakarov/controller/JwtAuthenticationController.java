@@ -38,30 +38,24 @@ public class JwtAuthenticationController {
     validate(authenticationRequest);
     log.info("Login request received, user {}", authenticationRequest.getEmail());
 
-    Authentication authentication = authenticate(authenticationRequest.getEmail(),
-        authenticationRequest.getPassword());
+    Authentication authentication = authenticate(authenticationRequest.getEmail(), authenticationRequest.getPassword());
 
     String token = jwtTokenService.generateToken((UserDetails) authentication.getPrincipal());
 
-    return JwtResponseDto.builder()
-        .jwtToken(token)
-        .build();
-  }
-
-  private Authentication authenticate(String username, String password) {
-    try {
-      return authenticationManager
-          .authenticate(new UsernamePasswordAuthenticationToken(username, password));
-    } catch (DisabledException | BadCredentialsException | AccountExpiredException
-        | UsernameNotFoundException e) {
-      throw new ClientException(HttpStatus.BAD_REQUEST, "Authentication exception");
-    }
+    return JwtResponseDto.builder().jwtToken(token).build();
   }
 
   private static void validate(JwtRequestDto authenticationRequest) {
     if (isBlank(authenticationRequest.getEmail()) || isBlank(authenticationRequest.getPassword())) {
-      throw new ClientException(HttpStatus.BAD_REQUEST,
-          "Some of required request attributes are empty [email,password]");
+      throw new ClientException(HttpStatus.BAD_REQUEST, "Some of required request attributes are empty [email,password]");
+    }
+  }
+
+  private Authentication authenticate(String username, String password) {
+    try {
+      return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+    } catch (DisabledException | BadCredentialsException | AccountExpiredException | UsernameNotFoundException e) {
+      throw new ClientException(HttpStatus.BAD_REQUEST, "Authentication exception");
     }
   }
 
