@@ -16,52 +16,52 @@ import org.springframework.context.annotation.Configuration;
 public class K8sConfig {
   private static final String clientCert =
           "-----BEGIN CERTIFICATE-----\n" +
-          "MIIDCjCCAfKgAwIBAgIIFWseuVe7DjEwDQYJKoZIhvcNAQELBQAwEjEQMA4GA1UE\n" +
-          "AxMHa3ViZS1jYTAeFw0yMjAxMDQwOTU3MDRaFw0zMjAxMDIwOTU3MDVaMC4xFzAV\n" +
-          "BgNVBAoTDnN5c3RlbTptYXN0ZXJzMRMwEQYDVQQDEwprdWJlLWFkbWluMIIBIjAN\n" +
-          "BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA27ZP93Z2XvBuvCm6ml0z/D7kqG/j\n" +
-          "wmZW+BVxBfdFjvDbARJwr9DL6YosyJE/7WD/Z5S5ER7e+51Ihg3ZR/iyoo31L2VC\n" +
-          "xiDjGV/qbIQ8iLGJcB6VH1xNFp2qB/GJT6Xs4zS7OoBu9NGZIbc+DZxGW+C8eKfw\n" +
-          "27LBcKS4eNpnjt6sBK4Qx5NehH+phOSlIjEhl9IZvLyL6WfpwB2CVnU31Pq7GRBk\n" +
-          "QsJQpZEWYrO+qMdX6st23CNfdBBBPIKahhlvqgLPcN7zEyQb9mlRx0gaRZtoDRUu\n" +
-          "VbqmZe8SNjiy3gYQlXiOlPpporMhMYfZWWZlsCeKZeB3Tfxwf7xwvK8l4QIDAQAB\n" +
-          "o0gwRjAOBgNVHQ8BAf8EBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwHwYDVR0j\n" +
-          "BBgwFoAUbpu3sVbNdcTZikPjwe/BZvxOqgwwDQYJKoZIhvcNAQELBQADggEBAEtB\n" +
-          "Of2+jBVfWOONtktsrAldwOHCkioi6vm6WEsXqT8mqy4sUEpoVYAjsDeTrbKXS3hm\n" +
-          "B6scKQAXC0JOhjmPWHLwOu+OOi/jplBnDhANYjyReFUcXawSBSZq3mnYGOXA6om0\n" +
-          "CgRfJszwoEJE6s6IrfphGhW1jIEhdvCetkwA9NdUHTZ5p8OyNp3GzzBXkp2g4rqq\n" +
-          "B1RYrEw1PoM6U2AS1XiLEGNQ8FXXCg6hpmmNhmmDM9Z/JdsCz7jwT/sKERx83v9H\n" +
-          "hN3YaDLMVSoFCWGNWmXOVu/4drJkQw2CHn7HQ+FwniUI2ymDnCzQ7UAgTiqIDsI9\n" +
-          "sXJ8fCk7gaK5jVSnEH4=\n" +
+          "MIIDITCCAgmgAwIBAgIISlXVrG8zATowDQYJKoZIhvcNAQELBQAwFTETMBEGA1UE\n" +
+          "AxMKa3ViZXJuZXRlczAeFw0yMTEyMDcxNDQ0MzNaFw0yMjEyMDcxNDQ0MzRaMDQx\n" +
+          "FzAVBgNVBAoTDnN5c3RlbTptYXN0ZXJzMRkwFwYDVQQDExBrdWJlcm5ldGVzLWFk\n" +
+          "bWluMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwcVZn8UOVZYratYS\n" +
+          "eB3nfMPwHTQQLEecViqETYL+D1KNOgCzVqeLfo/DOr0hZoz6Z3pDzWFjzZ4mE7yA\n" +
+          "wGa1cN4uJ8OZMi9GM6wtq3gppaRjObYp37FvdDerae52M6nZmz0RG4FqaxoGgmQV\n" +
+          "cIVK+sNDewUJp2ze2oUCQOCKrI57Wg0RsBLFlXXZPtHdkKc5n+7cXL2b48ydTl6U\n" +
+          "JPczmxZmY9eQicGxurRMHWTuLjXe7T6VInxGGj6NaFGWDKGCefVBTrHkt6tLgeEj\n" +
+          "1sqgbQjtuulsDLG/FL9Cz4zzx1x/G4ZzApnKxXnfofoSA9fES/BJy71J8FKAJC32\n" +
+          "tH7p+wIDAQABo1YwVDAOBgNVHQ8BAf8EBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUH\n" +
+          "AwIwDAYDVR0TAQH/BAIwADAfBgNVHSMEGDAWgBQ/hj/kTBms1k+zdWk8rUQdlwUh\n" +
+          "nTANBgkqhkiG9w0BAQsFAAOCAQEAAW2dexPy1yajFgudQxeX2n9kUd5n0RaekFuN\n" +
+          "bRdiQ7rfqYdoOANZk/BHfTQwi/ztrqqc4/1XQ9RyqYBavBUI3WL9hCkPWgbw1mwL\n" +
+          "81jwZ1T/R/rpSp4EAMSVmvqCdOh1GE5hswRamLkd7461W+9BbdO05X+CubGCElOD\n" +
+          "MgV6CWDi55sJsTN8T6iDuF67rmkMgui9393SkaohmSoMlZ8J2xL23cM8NCnzWaj7\n" +
+          "nLskXaaWgpAmqGT2Mt5kSzPdComdgqeGG5/aA/wvvHqxmEVULX1qozjunRlYEmvR\n" +
+          "bZurIPC/Td/GSkEvi5fWqZ4g16Ec4BeAbwRLPxhuuBJDNC4FcA==\n" +
           "-----END CERTIFICATE-----";
 
   private static final String clientKey =
           "-----BEGIN RSA PRIVATE KEY-----\n" +
-          "MIIEpQIBAAKCAQEA27ZP93Z2XvBuvCm6ml0z/D7kqG/jwmZW+BVxBfdFjvDbARJw\n" +
-          "r9DL6YosyJE/7WD/Z5S5ER7e+51Ihg3ZR/iyoo31L2VCxiDjGV/qbIQ8iLGJcB6V\n" +
-          "H1xNFp2qB/GJT6Xs4zS7OoBu9NGZIbc+DZxGW+C8eKfw27LBcKS4eNpnjt6sBK4Q\n" +
-          "x5NehH+phOSlIjEhl9IZvLyL6WfpwB2CVnU31Pq7GRBkQsJQpZEWYrO+qMdX6st2\n" +
-          "3CNfdBBBPIKahhlvqgLPcN7zEyQb9mlRx0gaRZtoDRUuVbqmZe8SNjiy3gYQlXiO\n" +
-          "lPpporMhMYfZWWZlsCeKZeB3Tfxwf7xwvK8l4QIDAQABAoIBAQDU9Pa5YucEyoJq\n" +
-          "ev/VUvVqTwOOhzT5Xfx55T5xi+St0aJUfa0fnH+o0zbpCHAwA05K9YoToBp9Q0vi\n" +
-          "M1YhPlrW2EWINNvt8j5sf91WZS3PSFVwiRP9G5fUjekaXfC7dJYQ+zFmWMozHV0R\n" +
-          "ouzQgGJp94B2akE4kSCRr/blnLu3ayzCek7zPJCyAoXA5rwflBCx2mwe+WpgATo7\n" +
-          "223qqpTrH/cv7odvfiZfujbliuKMop7cIa/PDqPYsgzzunAr+4QH8z++zWUrkeGP\n" +
-          "OGpL6dwiKs6fkqE9IRieFc53jXmQAddBYHvo2yh5CxfPy4pZC4EeR6P/AKw8jdiq\n" +
-          "8ClKl24JAoGBAPW3E63lFlbr0tlAwy6BscFDBaPARByv6SrPNrFQOKTfFQZwH7fH\n" +
-          "hHdt2Dh/9RU80jMBIq9YeA6Eus8cYyrjPcK8YBwSMQdTqMxfBtLH0Mw2mxT3cxLL\n" +
-          "/vDwN5sR3MCrHj9e0IeCEyebDX+A3kNjv1/lqHsly/pEOXDdsrPRPd4PAoGBAOTo\n" +
-          "mr5D2XjttItSTn/pOVcSBgLEoZm8hfeC3XnDpjiEqf6WpxYw2w4gFEZjHtXyvEwx\n" +
-          "8vMVs7xEZsrzJCr2KVoB0ClSlaCnv4tDvoFVhB7VcplPvgI63vL0Uxbp9Id74H5V\n" +
-          "aDW4i1FkTP153y9+93JWrR9cLNlzkU+BofhUEa0PAoGBALJ514aBFxft1UpOuzcl\n" +
-          "p2q8dvU5a3/22oNo3c4veeVv0ILLoI5KEtL464wmjWtusTOxCHOa7CGHkXVspi95\n" +
-          "vducHqdlI02yG7LO91LVJrmelEjHcENf/38czRcLA3DDGoZnJUq4VZd4DXbmsQr8\n" +
-          "Af7y/szsaFwRgDOWJP5t5uVLAoGAMUFz+rjy1LihftEpHxD6S6gPLw1MkJ4mXYoF\n" +
-          "Siw1WjgBtEyKi5XbrQBuHG87tWHT7rlYw8HJuRsm20jSYYQyhbGaLyocFEPETZ04\n" +
-          "IvBZy6C2VhL4mdY9Hx4/utCA055uQgDyuYyKPetNPcW5pqi1ah8IhZT5+ZiKjgcg\n" +
-          "6SR94TUCgYEAxijB1kQUFjoq36+pqnP/42ZuPu4RM+5ThMen162ZWp3RodlKuZD7\n" +
-          "g/VZ8eVMjNWwMElGxmdE6lSg5WzTqDQswuZo3u1gjbzpg+Ae1NPPg8e3fV5/4s5U\n" +
-          "cYMaeinKkLIYUH50yqJwr669aQqAMui2FfDR2J3PTqeHCqMxJxueckc=\n" +
+          "MIIEpAIBAAKCAQEAwcVZn8UOVZYratYSeB3nfMPwHTQQLEecViqETYL+D1KNOgCz\n" +
+          "VqeLfo/DOr0hZoz6Z3pDzWFjzZ4mE7yAwGa1cN4uJ8OZMi9GM6wtq3gppaRjObYp\n" +
+          "37FvdDerae52M6nZmz0RG4FqaxoGgmQVcIVK+sNDewUJp2ze2oUCQOCKrI57Wg0R\n" +
+          "sBLFlXXZPtHdkKc5n+7cXL2b48ydTl6UJPczmxZmY9eQicGxurRMHWTuLjXe7T6V\n" +
+          "InxGGj6NaFGWDKGCefVBTrHkt6tLgeEj1sqgbQjtuulsDLG/FL9Cz4zzx1x/G4Zz\n" +
+          "ApnKxXnfofoSA9fES/BJy71J8FKAJC32tH7p+wIDAQABAoIBAHAmM9A38irxBmII\n" +
+          "Upo43KEmmpOcbXvjWoW4h+iA12Cw69JVU3bk8+Slel5F1s4O7GL1rcZyBpycWvdz\n" +
+          "U6WIDJ2tylLzb3hPSjdgAPLMUnZvZYqidyvj+1jtW4WtIbaXKL4jowIjbh9c6cWP\n" +
+          "/aSpURM/7o+GA+dmKLma4AoCq+Bgd2v3JH6TgsH85Rj+adc+jMBkPo/p7Bt5mtai\n" +
+          "Megd+vKR4LnDsOWWipbbszByodeABeStHz5FmLkRmgvjtUj0/r2zE0culmV7ug+0\n" +
+          "YID7HKlda5Q6V09qRgPKbmMhn7buqkFPqYEdXZO0ukMU8Zf4+1WEp3Oc/yCkf0mZ\n" +
+          "Xg7W98kCgYEA+Toue6DM9LnPdGlij1w0aoIdQrl24nDR4mrQHhoYgXUYXcXuZft7\n" +
+          "AipSiN6J5Dn2CHlSIP93rqsf7oqiRX7IMGH/rI5nxEmsyDnfUaS5wdyZmfb13n0D\n" +
+          "JbEzPoiit13jURTJ9PhpbUL8nYwdXe7p5lYkr2Zc7jSVe8pmsFjGxe8CgYEAxwle\n" +
+          "9SgFiQKwaLHpLNAKHfkr0ogYKYkT8UqwcGzTummPB33909drfMf1cHk+RpEc3+47\n" +
+          "Dd8vEErawfOBnYehj8oFn7JJPRe0xnczWe5VpSV7O6WDdB5qLIaGRaNiYLD/awZa\n" +
+          "JwnoBhaTb5bPGXXjulJP4P1gZNHwTA8n7lQSiLUCgYBh9xXIcMe/tr4uMzKTyZms\n" +
+          "+CJKVR6/GbvWtUfDXVyenomKasAwBC8xBbPVqywmswXcBNxcri68UPXHTWVFzfUg\n" +
+          "15Spnnx5csBhICaBMC/4XR9fnuy8nQU8rq/G9+yGCXjOKU7NZUwDr94ei7ILd1sn\n" +
+          "uFrJO4Jx++d6dm/xB6RyrwKBgQCvmyb6qcrobUTzujR+Yzbp5xOw9n5K9zRvKXSu\n" +
+          "XHYZ/FRDSfgPVfrx5wI3r+EwJYwSToAv5wABIeoMQSnUsPvsf1Oi6IwRqL7IdBcM\n" +
+          "e2l5Aa7Om2N1qfgHPNFu045SvRc9eCdGVkkuRfDi/W3PiuHXXBQ575OCoG+gy6Zx\n" +
+          "ch/AGQKBgQDd5USMfnJee9r94i97GCYGrNCrKSUVmfRQQzpYH5bDwOWWF/AUZM1u\n" +
+          "pqfc3LFFORP7dl22JtZ7tlF4NmofkAzZsEYt44N2g4qib14AnqUFUsQLF+9bjqkR\n" +
+          "6yun21BajwQ9zNoBbmNBhJ0ZsssQQ8ppCHpAzzPA99FVFMS3kGm9Cw==\n" +
           "-----END RSA PRIVATE KEY-----";
 
   private final K8sProperties properties;
@@ -74,7 +74,7 @@ public class K8sConfig {
     return new ConfigBuilder()
         .withClientCertData(clientCert)
         .withClientKeyData(clientKey)
-//        .withMasterUrl(properties.getEndpoint())
+        .withMasterUrl(properties.getEndpoint())
         .withNamespace(properties.getDefaultNamespace())
         .withConnectionTimeout(10000)
         .build();

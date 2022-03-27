@@ -36,9 +36,9 @@ public class JwtAuthenticationController {
   @PostMapping(LOGIN)
   JwtResponseDto createAuthenticationToken(@RequestBody JwtRequestDto authenticationRequest) {
     validate(authenticationRequest);
-    log.info("Login request received, user {}", authenticationRequest.getEmail());
+    log.info("Login request received, user {}", authenticationRequest.getUsername());
 
-    Authentication authentication = authenticate(authenticationRequest.getEmail(), authenticationRequest.getPassword());
+    Authentication authentication = authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
     String token = jwtTokenService.generateToken((UserDetails) authentication.getPrincipal());
 
@@ -46,7 +46,7 @@ public class JwtAuthenticationController {
   }
 
   private static void validate(JwtRequestDto authenticationRequest) {
-    if (isBlank(authenticationRequest.getEmail()) || isBlank(authenticationRequest.getPassword())) {
+    if (isBlank(authenticationRequest.getUsername()) || isBlank(authenticationRequest.getPassword())) {
       throw new ClientException(HttpStatus.BAD_REQUEST, "Some of required request attributes are empty [email,password]");
     }
   }

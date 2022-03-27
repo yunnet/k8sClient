@@ -3,8 +3,8 @@ import Axios from 'axios';
 
 class LoginInputForm extends React.Component {
     state = {
-        email: 'admin@admin.com',
-        password: 'adminPassword',
+        username: 'admin',
+        password: '123456',
         loginOk: false
     };
 
@@ -14,7 +14,7 @@ class LoginInputForm extends React.Component {
             method: 'post',
             url: `http://localhost:8080/api/k8sclient/v1/login`,
             data: {
-                email: this.state.email,
+                username: this.state.username,
                 password: this.state.password
             }
         }).then( response =>{
@@ -34,7 +34,7 @@ class LoginInputForm extends React.Component {
 
         // this.setState(
         //     {
-        //         email: '',
+        //         username: '',
         //         password: '',
         //         loginOk: false
         //     }
@@ -45,13 +45,13 @@ class LoginInputForm extends React.Component {
         return (
             <form onSubmit={this.handleSubmit}>
                 <div className="form-group">
-                    <label htmlFor="email">Email</label>
-                    <input type="email"
+                    <label htmlFor="username">Username</label>
+                    <input type="username"
                            className="form-control"
-                           id="email"
-                           placeholder="Enter email"
-                           value={this.state.email}
-                           onChange={event => this.setState({email: event.target.value})}
+                           id="username"
+                           placeholder="Enter username"
+                           value={this.state.username}
+                           onChange={event => this.setState({username: event.target.value})}
                            required
                            disabled={this.state.loginOk}
                     />

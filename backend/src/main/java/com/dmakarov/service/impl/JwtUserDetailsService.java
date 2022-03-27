@@ -22,7 +22,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    UserEntity user = repository.findByEmail(username);
+    UserEntity user = repository.findByUsername(username);
 
     if (user == null) {
       throw new UsernameNotFoundException(
@@ -33,9 +33,9 @@ public class JwtUserDetailsService implements UserDetailsService {
         .map(SimpleGrantedAuthority::new)
         .collect(toList());
 
-    log.info("User authenticated: {} {}", user.getEmail(), authorities);
+    log.info("User authenticated: {} {}", user.getUsername(), authorities);
 
-    return User.withUsername(user.getEmail())
+    return User.withUsername(user.getUsername())
         .password(user.getPassword())
         .authorities(authorities)
         .build();

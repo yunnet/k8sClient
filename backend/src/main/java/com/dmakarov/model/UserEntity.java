@@ -25,9 +25,12 @@ public class UserEntity {
   @Id
   @GeneratedValue
   private Long id;
+
   @Column(unique = true)
-  private String email;
+  private String username;
+
   private String password;
+
   @ElementCollection
   private Set<String> roles;
 }

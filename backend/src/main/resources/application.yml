@@ -39,7 +39,7 @@ management:
 
 k8s:
 #  endpoint: ${KUBERNETES_MASTER:localhost:8080}
-  endpoint: 10.8.80.164
+  endpoint: https://192.168.112.128:6443
   defaultNamespace: default
 
 jwt:

@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
 
-import io.fabric8.kubernetes.api.model.Namespace;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

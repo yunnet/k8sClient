@@ -6,6 +6,6 @@ import lombok.Value;
 @Value
 @Builder
 public class JwtRequestDto {
-  String email;
+  String username;
   String password;
 }

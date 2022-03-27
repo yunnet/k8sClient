@@ -20,15 +20,15 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DefaultUserStarter implements ApplicationRunner {
 
-  private static final String ADMIN_EMAIL = "admin@admin.com";
-  private static final String ADMIN_PASSWORD = "adminPassword";
+  private static final String ADMIN_EMAIL = "admin";
+  private static final String ADMIN_PASSWORD = "123456";
   private final UserRepository repository;
   private final PasswordEncoder encoder;
 
   @Override
   public void run(ApplicationArguments args) {
     UserEntity adminUser = UserEntity.builder()
-        .email(ADMIN_EMAIL)
+        .username(ADMIN_EMAIL)
         .password(encoder.encode(ADMIN_PASSWORD))
         .roles(Set.of("ROLE_ADMIN"))
         .build();

@@ -44,8 +44,6 @@ public class KubernetesServiceImpl implements KubernetesService {
     return CompletableFuture.runAsync(() -> deleteDeployment(deploymentEntity), asyncExecutor);
   }
 
-
-
   @Override
   public Deployment getDeployment(String namespace, String deploymentName) {
     try (KubernetesClient client = new DefaultKubernetesClient(config)) {

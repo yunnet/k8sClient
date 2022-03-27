@@ -39,16 +39,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
   }
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request,
-      HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
     String requestTokenHeader = request.getHeader("Authorization");
 
     if (requestTokenHeader == null) {
       log.trace("Authorization header not found, request {}", request.getServletPath());
       chain.doFilter(request, response);
     } else if (!requestTokenHeader.startsWith("Bearer ")) {
-      log.warn("Expected JWT token that begins with Bearer string. Actual token is {}",
-          requestTokenHeader);
+      log.warn("Expected JWT token that begins with Bearer string. Actual token is {}", requestTokenHeader);
       response.sendError(UNAUTHORIZED.value(), "JWT Token does not begin with Bearer String");
     } else {
       // JWT Token is in the form "Bearer token". Remove Bearer word and get only the Token
@@ -56,20 +54,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
       try {
         UserDetails userDetails = jwtTokenService.validateTokenAndGetUserDetails(jwtToken);
         //if user was already deleted
-        String email = userDetails.getUsername();
-        UserEntity user = repository.findByEmail(email);
+        String username = userDetails.getUsername();
+        UserEntity user = repository.findByUsername(username);
         if (user == null) {
-          log.warn("User with id {} not found", email);
-          response.sendError(HttpStatus.UNAUTHORIZED.value(),
-              String.format("User with id %s not found", email));
+          log.warn("User with id {} not found", username);
+          response.sendError(HttpStatus.UNAUTHORIZED.value(), String.format("User with id %s not found", username));
           return;
         }
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-            new UsernamePasswordAuthenticationToken(
-                userDetails, null, userDetails.getAuthorities());
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-        usernamePasswordAuthenticationToken
-            .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         // After setting the Authentication in the context, we specify
         // that the current user is authenticated. So it passes the
         // Spring Security Configurations successfully.
